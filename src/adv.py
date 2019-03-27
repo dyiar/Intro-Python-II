@@ -6,7 +6,7 @@ import textwrap
 
 room = {
     'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mount beckons"),
+                     "North of you, the cave mount beckons", ['torch']),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
 passages run north and east."""),
@@ -47,12 +47,10 @@ def try_direction(direction, current_room):
     else:
         print(">>You can't go that way<<\n")
         return current_room
-    
-      
-
 
     # Make a new player object that is currently in the 'outside' room.
 player = Player(room["outside"])
+print(room["outside"].items)
     # Write a loop that:
     #
     # * Prints the current room name
@@ -60,13 +58,44 @@ while True:
     print(player.current_room.name)
     # * Prints the current description (the textwrap module might be useful here).
     print(textwrap.fill(player.current_room.description))
+    print(player.current_room.items)
     # * Waits for user input and decides what to do.
-    s = input("\n>").lower()[0]
+    s = input("\n>").lower().split()
+    
+    if len(s) == 1:
 
-    if s == 'q':
-        break
+        s = s[0][0]
 
-    player.current_room = try_direction(s, player.current_room)
+        if s == 'q':
+            break
+            
+        player.current_room = try_direction(s, player.current_room)
+
+    elif len(s) == 2:
+        first_word = s[0]
+        second_word = s[1]
+
+        def try_getItem(item, current_room):
+
+            if [second_word] in [current_room.items]:
+                print('success')
+                current_room.removeItem(second_word)
+                return current_room
+            else:
+                print('item not here')
+                return current_room
+
+        if first_word in ['get', 'drop']:
+            if first_word == 'get':
+                player.current_room = try_getItem(second_word, player.current_room)
+                # print(f'get {second_word}')
+            elif first_word == 'drop':
+                print(f'drop {second_word}')
+        else:
+            print('Use get or drop')
+    else:
+        print("I don't understand that")
+        continue
     #
     # If the user enters a cardinal direction, attempt to move to the room there.
     # Print an error message if the movement isn't allowed.

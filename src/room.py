@@ -22,18 +22,19 @@ class Room:
             self.items = roomItems
             return roomItems
 
-    def listItems(self):
-        if len(self.items) == 0:
-            print('No items')
-        else:
-            for item in self.items:
-                print(f"{item.itemName}: {item.iDescription}")
+    # def listItems(self):
+    #     if len(self.items) == 0:
+    #         print('No items')
+    #     else:
+    #         for item in self.items:
+    #             print(f"{item.itemName}: {item.iDescription}")
 
     def removeItem(self, item):
         self.items.remove(item)
 
-    # def addItem(self, item):
-    #     self.items.append(item)
+    def addItem(self, item):
+        # print(type(item))
+        self.items.append(item)
 
     def __str__(self):
         return f"{self.name}, {self.description}, {self.items}"

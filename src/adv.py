@@ -7,7 +7,7 @@ import textwrap
 
 room = {
     'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mount beckons", [Item('torch', "A flickering light in a place surrounded in darkness.")]),
+                     "North of you, the cave mount beckons"),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
 passages run north and east."""),
@@ -40,6 +40,13 @@ room['treasure'].s_to = room['narrow']
 # Main
 #
 
+torch = Item('torch', "A flickering light in a place surrounded in darkness.")
+key = Item('key', "An old rusted key. This might be useful later. Probably not.")
+
+room['outside'].items.append(torch)
+room['overlook'].items.append(key)
+
+
 def try_direction(direction, current_room):
     attribute = direction + '_to'
 
@@ -59,10 +66,10 @@ print("\n")
     #
     # * Prints the current room name
 while True:
-    print('Welcome to your new adventure. Press N, E, S, W to move. \n Press i to see your inventory. \n Press m to see all items in the room. \n Good luck! \n\n')
-    print("Your are currently here: ", player.current_room.name)
+    print('Welcome to your new adventure. Press N, E, S, W to move. \n    Press i to see your inventory. \n    Press m to see all items in the room. \n    Good luck! \n\n')
+    print(f"Your are currently here: \n    {player.current_room.name}")
     # * Prints the current description (the textwrap module might be useful here).
-    print(textwrap.fill(player.current_room.description))
+    print(f"    {textwrap.fill(player.current_room.description)}")
     # print(player.current_room.itemsInRoom(), "items in current room")
     # print(player.items, "items in inventory")
     # * Waits for user input and decides what to do.
@@ -76,10 +83,10 @@ while True:
             break
 
         if s == 'i':
-            print("The items in your inventory are: ", player.items)
+            print(f"\nThe items in your inventory are: {player.items}\n")
 
         if s == 'm':
-            print("The items in the current room are: ", player.current_room.itemsInRoom())
+            print(f"\nThe items in the current room are: {player.current_room.itemsInRoom()}\n")
             
         player.current_room = try_direction(s, player.current_room)
 
@@ -90,23 +97,23 @@ while True:
         def try_getItem(item, current_room):
 
             if [second_word] in [current_room.items]:
-                print(f'You have added the {second_word} to your inventory!')
+                print(f'\nYou have added the {second_word} to your inventory!\n')
                 current_room.removeItem(second_word)
                 player.addItem(second_word)
                 return current_room
             else:
-                print('item not here')
+                print('\nitem not here\n')
                 return current_room
 
         def try_dropItem(item, current_room):
             
             if [second_word] in [player.items]:
-                print('You have dropped the item from your inventory. It has been destroyed!')
-                # current_room.addItem(second_word)
+                print('\nYou have dropped the item from your inventory. Come back later to pick it up.')
+                current_room.addItem(Item(second_word, 'You dropped this earlier.\n'))
                 player.removeItem(second_word)
                 return current_room
             else:
-                print('item not in inventory')
+                print('\nitem not in inventory\n')
                 return current_room
 
         if first_word in ['get', 'drop']:

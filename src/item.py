@@ -8,3 +8,6 @@ class Item:
 
     def onDrop(self, itemName):
         print(f"You have dropped {self.itemName}.")
+
+    def __str__(self):
+        return f"{self.itemName}, {self.iDescription}"

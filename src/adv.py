@@ -1,12 +1,13 @@
 from room import Room
 from player import Player
+from item import Item
 import textwrap
 
 # Declare all the rooms
 
 room = {
     'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mount beckons", ['torch']),
+                     "North of you, the cave mount beckons", [Item('torch', "A flickering light in a place surrounded in darkness.")]),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
 passages run north and east."""),
@@ -44,21 +45,26 @@ def try_direction(direction, current_room):
 
     if hasattr(current_room, attribute):
         return getattr(current_room, attribute)
+    elif direction == 'm' or direction == 'i':
+        return current_room
     else:
         print(">>You can't go that way<<\n")
         return current_room
 
     # Make a new player object that is currently in the 'outside' room.
 player = Player(room["outside"])
-print(room["outside"].items)
+print("\n")
+# print(room["outside"].items)
     # Write a loop that:
     #
     # * Prints the current room name
 while True:
-    print(player.current_room.name)
+    print('Welcome to your new adventure. Press N, E, S, W to move. \n Press i to see your inventory. \n Press m to see all items in the room. \n Good luck! \n\n')
+    print("Your are currently here: ", player.current_room.name)
     # * Prints the current description (the textwrap module might be useful here).
     print(textwrap.fill(player.current_room.description))
-    print(player.current_room.items)
+    # print(player.current_room.itemsInRoom(), "items in current room")
+    # print(player.items, "items in inventory")
     # * Waits for user input and decides what to do.
     s = input("\n>").lower().split()
     
@@ -68,6 +74,12 @@ while True:
 
         if s == 'q':
             break
+
+        if s == 'i':
+            print("The items in your inventory are: ", player.items)
+
+        if s == 'm':
+            print("The items in the current room are: ", player.current_room.itemsInRoom())
             
         player.current_room = try_direction(s, player.current_room)
 
@@ -78,11 +90,23 @@ while True:
         def try_getItem(item, current_room):
 
             if [second_word] in [current_room.items]:
-                print('success')
+                print(f'You have added the {second_word} to your inventory!')
                 current_room.removeItem(second_word)
+                player.addItem(second_word)
                 return current_room
             else:
                 print('item not here')
+                return current_room
+
+        def try_dropItem(item, current_room):
+            
+            if [second_word] in [player.items]:
+                print('You have dropped the item from your inventory. It has been destroyed!')
+                # current_room.addItem(second_word)
+                player.removeItem(second_word)
+                return current_room
+            else:
+                print('item not in inventory')
                 return current_room
 
         if first_word in ['get', 'drop']:
@@ -90,7 +114,8 @@ while True:
                 player.current_room = try_getItem(second_word, player.current_room)
                 # print(f'get {second_word}')
             elif first_word == 'drop':
-                print(f'drop {second_word}')
+                player.current_room = try_dropItem(second_word, player.current_room)
+                # print(f'drop {second_word}')
         else:
             print('Use get or drop')
     else:
